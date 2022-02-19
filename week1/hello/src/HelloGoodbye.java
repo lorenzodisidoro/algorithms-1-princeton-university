@@ -1,4 +1,4 @@
-package week1.hello;
+package week1.hello.src;
 
 public class HelloGoodbye {
     public static void main(String[] args) {
