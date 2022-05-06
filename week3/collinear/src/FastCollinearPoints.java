@@ -1,11 +1,14 @@
 package week3.collinear.src;
 
+import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdOut;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 
 public class FastCollinearPoints {
     private Point[] points;
-    private LineSegment segments[];
+    private LineSegment[] segments;
     private int numberOfSegments;
     private LinkedList<Point> collinearPoints;
 
@@ -21,27 +24,28 @@ public class FastCollinearPoints {
      */
     public FastCollinearPoints(Point[] argPoints) {
         checkPoints(argPoints);
-        points = argPoints;
-        Arrays.sort(points);
 
+        points = argPoints.clone();
         segments = new LineSegment[2];
         numberOfSegments = 0;
         collinearPoints = new LinkedList<>();
+
+        Arrays.sort(points);
 
         for (int i = 0; i < points.length; i++) {
             Point p = points[i]; // point p
             double previousSlope = 0.0;
 
-            for (int j = i + 1; j < points.length; j++) {
+            for (int j = 0; j < points.length; j++) {
                 Point q = points[j]; // point q
                 double currentSlope = p.slopeTo(q);
 
-                if (currentSlope != previousSlope) {
+                if (j != 0 || currentSlope != previousSlope) {
                     if (collinearPoints.size() >= 3) {
                         LineSegment newLineSegment = new LineSegment(collinearPoints.getFirst(), collinearPoints.getLast());
                         enqueue(newLineSegment);
                         collinearPoints.getFirst().drawTo(collinearPoints.getLast());
-                        // StdDraw.show();
+                        StdDraw.show();
                     }
                 }
 
@@ -77,11 +81,11 @@ public class FastCollinearPoints {
         }
 
         for (int i = 0; i < argPoints.length; i++)
-            for (int j = 0; j < points.length; j++) {
-                if (points[i] == null || points[j] == null)
+            for (int j = 0; j < argPoints.length; j++) {
+                if (argPoints[i] == null || argPoints[j] == null)
                     throw new IllegalArgumentException();
 
-                if (i != j && points[i].compareTo(points[j]) == 0)
+                if (i != j && argPoints[i].compareTo(argPoints[j]) == 0)
                     throw new IllegalArgumentException();
             }
 
@@ -98,16 +102,14 @@ public class FastCollinearPoints {
     }
 
     public static void main(String[] args) {
-
-        // read the n points from a file
-        In in = new In(args[0]);
-        int n = in.readInt();
+        int n = 6;
         Point[] points = new Point[n];
-        for (int i = 0; i < n; i++) {
-            int x = in.readInt();
-            int y = in.readInt();
-            points[i] = new Point(x, y);
-        }
+        points[0] = new Point(19000, 10000);
+        points[1] = new Point(18000, 10000);
+        points[2] = new Point(32000, 10000);
+        points[3] = new Point(21000, 10000);
+        points[4] = new Point(1234, 5678);
+        points[5] = new Point(14000, 10000);
 
         // draw the points
         StdDraw.enableDoubleBuffering();

@@ -1,6 +1,6 @@
 package week3.collinear.src;
 
-// import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdDraw;
 
 import java.util.Arrays;
 
@@ -13,11 +13,11 @@ public class BruteCollinearPoints {
     public BruteCollinearPoints(Point[] argPoints) {
         checkPoints(argPoints);
 
-        Arrays.sort(this.points);
-
         points = argPoints.clone();
         numberOfSegments = 0;
         segments = new LineSegment[2];
+
+        Arrays.sort(this.points);
 
         // it is possible to solve the problem much faster than the brute-force solution :)
         for (int i = 0; i < points.length; i++)
@@ -30,7 +30,7 @@ public class BruteCollinearPoints {
                             enqueue(new LineSegment(points[i], points[z]));
 
                             points[i].drawTo(points[z]);
-                            // StdDraw.show();
+                            StdDraw.show();
                         }
                     }
     }
@@ -61,11 +61,11 @@ public class BruteCollinearPoints {
         }
 
         for (int i = 0; i < argPoints.length; i++)
-            for (int j = 0; j < points.length; j++) {
-                if (points[i] == null || points[j] == null)
+            for (int j = 0; j < argPoints.length; j++) {
+                if (argPoints[i] == null || argPoints[j] == null)
                     throw new IllegalArgumentException();
 
-                if (i != j && points[i].compareTo(points[j]) == 0)
+                if (i != j && argPoints[i].compareTo(argPoints[j]) == 0)
                     throw new IllegalArgumentException();
             }
 
@@ -82,16 +82,18 @@ public class BruteCollinearPoints {
     }
 
     public static void main(String[] args) {
-        Point p1 = new Point(4, 2);
-        Point p2 = new Point(5,1);
-        Point p3 = new Point(3,2);
-
-        Point[] points = new Point[]{p1, p2, p3};
+        int n = 6;
+        Point[] points = new Point[n];
+        points[0] = new Point(19000, 10000);
+        points[1] = new Point(18000, 10000);
+        points[2] = new Point(32000, 10000);
+        points[3] = new Point(21000, 10000);
+        points[4] = new Point(1234, 5678);
+        points[5] = new Point(14000, 10000);
 
         BruteCollinearPoints bruteCollinearPoints = new BruteCollinearPoints(points);
 
-        assert bruteCollinearPoints.numberOfSegments() == 1;
-        assert bruteCollinearPoints.segments().length == 1;
+        System.out.println(bruteCollinearPoints.numberOfSegments());
 
         // ToDo: add other test cases
     }
