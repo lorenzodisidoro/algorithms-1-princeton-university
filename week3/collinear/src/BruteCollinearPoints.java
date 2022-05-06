@@ -1,6 +1,6 @@
 package week3.collinear.src;
 
-import edu.princeton.cs.algs4.StdDraw;
+// import edu.princeton.cs.algs4.StdDraw;
 
 import java.util.Arrays;
 
@@ -19,6 +19,7 @@ public class BruteCollinearPoints {
         numberOfSegments = 0;
         segments = new LineSegment[2];
 
+        // it is possible to solve the problem much faster than the brute-force solution :)
         for (int i = 0; i < points.length; i++)
             for (int j = i + 1; j < points.length - 1; j++)
                 for (int k = j + 1; k < points.length - 1; k++)
@@ -29,7 +30,7 @@ public class BruteCollinearPoints {
                             enqueue(new LineSegment(points[i], points[z]));
 
                             points[i].drawTo(points[z]);
-                            StdDraw.show();
+                            // StdDraw.show();
                         }
                     }
     }
@@ -44,7 +45,6 @@ public class BruteCollinearPoints {
         }
 
         resize();
-
         segments[numberOfSegments++] = newLineSegment;
     }
 
@@ -52,6 +52,8 @@ public class BruteCollinearPoints {
      * Corner cases. Throw an IllegalArgumentException if the argument to the
      * constructor is null, if any point in the array is null, or if the argument
      * to the constructor contains a repeated point.
+     *
+     * @throw IllegalArgumentException
      */
     private void checkPoints(Point[] argPoints) {
         if (argPoints == null) {
@@ -71,15 +73,26 @@ public class BruteCollinearPoints {
 
     // the number of line segments
     public int numberOfSegments() {
-        return 0;
+        return numberOfSegments;
     }
 
     // the line segments
     public LineSegment[] segments() {
-        return null;
+        return segments;
     }
 
     public static void main(String[] args) {
+        Point p1 = new Point(4, 2);
+        Point p2 = new Point(5,1);
+        Point p3 = new Point(3,2);
 
+        Point[] points = new Point[]{p1, p2, p3};
+
+        BruteCollinearPoints bruteCollinearPoints = new BruteCollinearPoints(points);
+
+        assert bruteCollinearPoints.numberOfSegments() == 1;
+        assert bruteCollinearPoints.segments().length == 1;
+
+        // ToDo: add other test cases
     }
 }
