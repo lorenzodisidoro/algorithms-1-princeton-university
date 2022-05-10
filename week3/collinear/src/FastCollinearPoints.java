@@ -3,92 +3,113 @@ package week3.collinear.src;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
+
 
 public class FastCollinearPoints {
-    private Point[] points;
-    private LineSegment[] segments;
-    private int numberOfSegments;
-    private LinkedList<Point> collinearPoints;
+    private int currentSegmentIndex = 0;
+    private int numberOfSegments = 10;
+    private LineSegment[] segments = new LineSegment[numberOfSegments];
 
-    /**
-     * Finds all line segments containing 4 or more points
-     * - Think of p as the origin.
-     * - For each other point q, determine the slope it makes with p.
-     * - Sort the points according to the slopes they makes with p.
-     *   Check if any 3 (or more) adjacent points in the sorted order have equal slopes with
-     *   respect to p. If so, these points, together with p, are collinear.
-     *
-     * @param argPoints
-     */
-    public FastCollinearPoints(Point[] argPoints) {
-        checkPoints(argPoints);
+    public FastCollinearPoints(Point[] points) {
+        checkPoints(points, points.length);
+        fastCollinearPoints(points, points.length);
+    }
 
-        points = argPoints.clone();
-        segments = new LineSegment[2];
-        numberOfSegments = 0;
-        collinearPoints = new LinkedList<>();
+    private void checkPoints(Point[] points, int size) {
+        if (points == null)
+            throw new IllegalArgumentException("Null values");
 
-        Arrays.sort(points);
-
-        for (int i = 0; i < points.length; i++) {
-            Point p = points[i]; // point p
-            double previousSlope = 0.0;
-
-            for (int j = 0; j < points.length; j++) {
-                Point q = points[j]; // point q
-                double currentSlope = p.slopeTo(q);
-
-                if (j != 0 || currentSlope != previousSlope) {
-                    if (collinearPoints.size() >= 3) {
-                        LineSegment newLineSegment = new LineSegment(collinearPoints.getFirst(), collinearPoints.getLast());
-                        enqueue(newLineSegment);
-                        collinearPoints.getFirst().drawTo(collinearPoints.getLast());
-                        StdDraw.show();
-                    }
+        for (int i = 0; i < size; i++) {
+            if (points[i] == null)
+                throw new IllegalArgumentException("Null points not are allowed");
+            for (int j = 0; j < size; j++) {
+                if (points[j] == null)
+                    throw new IllegalArgumentException("Null points are not allowed");
+                if (i != j) {
+                    if (points[i].compareTo(points[j]) == 0)
+                        throw new IllegalArgumentException("Same points are not allowed");
                 }
-
-                collinearPoints.add(q);
-                previousSlope = currentSlope;
             }
         }
     }
 
-    private void resize() {
-        segments = Arrays.copyOf(segments, segments.length + 1);
-    }
-
-    private void enqueue(LineSegment newLineSegment) {
-        if (newLineSegment == null) {
-            throw new IllegalArgumentException();
+    private void resizesegments() {
+        LineSegment[] temp = new LineSegment[segments.length * 2];
+        for (int resizeTracker = 0; resizeTracker < segments.length; resizeTracker++) {
+            temp[resizeTracker] = segments[resizeTracker];
         }
 
-        resize();
-        segments[numberOfSegments++] = newLineSegment;
+        segments = temp;
     }
 
-    /**
-     * Corner cases. Throw an IllegalArgumentException if the argument to the
-     * constructor is null, if any point in the array is null, or if the argument
-     * to the constructor contains a repeated point.
-     *
-     * @throw IllegalArgumentException
-     */
-    private void checkPoints(Point[] argPoints) {
-        if (argPoints == null) {
-            throw new IllegalArgumentException();
-        }
+    private void fastCollinearPoints(Point[] points, int size) {
+        ArrayList<Integer> currentSegmentList = new ArrayList<Integer>();
 
-        for (int i = 0; i < argPoints.length; i++)
-            for (int j = 0; j < argPoints.length; j++) {
-                if (argPoints[i] == null || argPoints[j] == null)
-                    throw new IllegalArgumentException();
+        for (int i = 0; i < size; i++) {
+            Point temp = points[i];
+            points[i] = points[0];
+            points[0] = temp;
 
-                if (i != j && argPoints[i].compareTo(argPoints[j]) == 0)
-                    throw new IllegalArgumentException();
+            Point[] sorted = points.clone();
+            Arrays.sort(sorted, 1, size, temp.slopeOrder());
+
+            double prevSlope = temp.slopeTo(sorted[1]);
+            int segLenTracker = 1;
+            currentSegmentList.clear();
+            currentSegmentList.add(0);
+            currentSegmentList.add(1);
+            int minSeg = 2;
+
+            for (int k = 2; k < size; k++) {
+                double newSlope = temp.slopeTo(sorted[k]);
+
+                if (prevSlope != newSlope || k == size - 1) {
+
+                    Point lastPoint = sorted[k - 1];
+                    if (k == size - 1 && prevSlope == newSlope) {
+                        lastPoint = sorted[k];
+                        currentSegmentList.add(k);
+                        segLenTracker++;
+                    }
+
+                    if (segLenTracker > minSeg) {
+                        Point maxPoint = temp;
+                        Point minPoint = temp;
+
+                        for (int innerCurcurrentSegmentIndex : currentSegmentList) {
+                            if (sorted[innerCurcurrentSegmentIndex].compareTo(maxPoint) > 0)
+                                maxPoint = sorted[innerCurcurrentSegmentIndex];
+
+                            if (sorted[innerCurcurrentSegmentIndex].compareTo(minPoint) <= 0)
+                                minPoint = sorted[innerCurcurrentSegmentIndex];
+                        }
+
+                        if (currentSegmentIndex == segments.length) {
+                            resizesegments();
+                        }
+
+                        if (temp.compareTo(minPoint) == 0) {
+
+                            segments[currentSegmentIndex] = new LineSegment(minPoint, maxPoint);
+                            currentSegmentIndex++;
+                        }
+                    }
+                    segLenTracker = 1;
+                    currentSegmentList.clear();
+                    currentSegmentList.add(0);
+                    currentSegmentList.add(k);
+                }
+                else {
+                    segLenTracker++;
+                    currentSegmentList.add(k);
+                }
+                prevSlope = newSlope;
+
             }
 
+        }
     }
 
     // the number of line segments
@@ -98,7 +119,19 @@ public class FastCollinearPoints {
 
     // the line segments
     public LineSegment[] segments() {
-        return segments;
+        LineSegment[] segmentCloned = new LineSegment[currentSegmentIndex];
+        int cloneTracker = 0;
+        for (LineSegment segment : segments) {
+            if (segment != null) {
+                segmentCloned[cloneTracker] = segment;
+                // StdOut.println(segment.toString());
+                cloneTracker++;
+            }
+        }
+
+        assert (cloneTracker == currentSegmentIndex);
+
+        return segmentCloned;
     }
 
     public static void main(String[] args) {
@@ -128,5 +161,4 @@ public class FastCollinearPoints {
         }
         StdDraw.show();
     }
-
 }

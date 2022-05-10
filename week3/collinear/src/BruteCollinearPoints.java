@@ -11,7 +11,7 @@ public class BruteCollinearPoints {
 
     // finds all line segments containing 4 points
     public BruteCollinearPoints(Point[] argPoints) {
-        checkPoints(argPoints);
+        checkPoints(argPoints, argPoints.length);
 
         points = argPoints.clone();
         numberOfSegments = 0;
@@ -55,20 +55,22 @@ public class BruteCollinearPoints {
      *
      * @throw IllegalArgumentException
      */
-    private void checkPoints(Point[] argPoints) {
-        if (argPoints == null) {
-            throw new IllegalArgumentException();
-        }
+    private void checkPoints(Point[] points, int size) {
+        if (points == null)
+            throw new IllegalArgumentException("Null values");
 
-        for (int i = 0; i < argPoints.length; i++)
-            for (int j = 0; j < argPoints.length; j++) {
-                if (argPoints[i] == null || argPoints[j] == null)
-                    throw new IllegalArgumentException();
-
-                if (i != j && argPoints[i].compareTo(argPoints[j]) == 0)
-                    throw new IllegalArgumentException();
+        for (int i = 0; i < size; i++) {
+            if (points[i] == null)
+                throw new IllegalArgumentException("Null points not are allowed");
+            for (int j = 0; j < size; j++) {
+                if (points[j] == null)
+                    throw new IllegalArgumentException("Null points are not allowed");
+                if (i != j) {
+                    if (points[i].compareTo(points[j]) == 0)
+                        throw new IllegalArgumentException("Same points are not allowed");
+                }
             }
-
+        }
     }
 
     // the number of line segments
