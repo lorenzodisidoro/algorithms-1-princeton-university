@@ -51,12 +51,37 @@ public class Board {
 
     // number of tiles out of place
     public int hamming() {
-        return 0;
+        int hammingNumber = 0;
+        for (int i = 0; i < blocksSize; i ++) {
+            if (blocks[i] != i + 1 && blocks[i] != 0) {
+                hammingNumber++;
+            }
+        }
+
+        return hammingNumber;
     }
 
     // sum of Manhattan distances between tiles and goal
     public int manhattan() {
-        return 0;
+        int sumOfHamming = 0;
+        for (int i = 0; i < blocksSize; i ++) {
+            if (blocks[i] != i + 1 && blocks[i] != 0) {
+                sumOfHamming += getManhattanDistance(blocks[i], i);
+            }
+        }
+
+        return sumOfHamming;
+    }
+
+    private int getManhattanDistance(int block, int idx) {
+        block--;
+        int i = idx/width;
+        int j = idx%width;
+
+        int horizontalDistance = Math.abs(block % width - j);
+        int verticalDistance = Math.abs(block / width - i);
+
+        return horizontalDistance + verticalDistance;
     }
 
     // is this board the goal board?
@@ -66,7 +91,7 @@ public class Board {
 
     // does this board equal y?
     public boolean equals(Object y) {
-        return true;
+        return false;
     }
 
     // all neighboring boards
@@ -79,11 +104,27 @@ public class Board {
         return null;
     }
 
+    private String getBlocks() {
+        StringBuilder toReturn = new StringBuilder("");
+        for (int i = 0; i < blocksSize; i ++) {
+            toReturn.append(blocks[i] + " ");
+        }
+        return toReturn.toString();
+    }
+
     // unit testing (not graded)
     public static void main(String[] args) {
-        int[][] tiles1 = {{0, 1, 3},{4, 2, 5},{7 ,8 ,6}};
+        int[][] tiles2 = {{8, 1, 3},{4, 0, 2},{7 ,6 ,5}};
+        Board board2 = new Board(tiles2);
+        System.out.println("Print: \n" + board2.toString());
+        System.out.println("Hamming: " + board2.hamming());
+        System.out.println("Manhattan: " + board2.manhattan());
+
+        int[][] tiles1 = {{0, 1, 3, 12},{4, 5, 2, 13},{7 ,8 ,6, 14},{9 ,10 ,11, 15}};
         Board board1 = new Board(tiles1);
-        board1.toString();
+        System.out.println("Print: \n" + board1.toString());
+        System.out.println("Hamming: " + board1.hamming());
+        System.out.println("Manhattan: " + board1.manhattan());
     }
 
 }
