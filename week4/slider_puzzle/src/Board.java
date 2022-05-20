@@ -1,13 +1,18 @@
 package week4.slider_puzzle.src;
 
+import edu.princeton.cs.algs4.Queue;
+
 public class Board {
     private final int[] blocks;
+    private final int[][] tiles;
     private final int blocksSize;
     private final int width;
 
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
-    public Board(int[][] tiles) {
+    public Board(int[][] inputTiles) {
+        tiles = inputTiles;
+
         if (tiles == null)
             throw new java.lang.IllegalArgumentException();
 
@@ -19,11 +24,11 @@ public class Board {
         blocks = new int[blocksSize];
 
         for (int i = 0; i < blocksSize; i++) {
-            blocks[i] = tiles[getBlockRowCol(i)[0]][getBlockRowCol(i)[1]];
+            blocks[i] = tiles[getTilesRowColFromBlockIndex(i)[0]][getTilesRowColFromBlockIndex(i)[1]];
         }
     }
 
-    private int[] getBlockRowCol(int i) {
+    private int[] getTilesRowColFromBlockIndex(int i) {
         return new int[]{i/width, i%width};
     }
 
@@ -75,8 +80,8 @@ public class Board {
 
     private int getManhattanDistance(int block, int idx) {
         block--;
-        int i = idx/width;
-        int j = idx%width;
+        int i = getTilesRowColFromBlockIndex(idx)[0];
+        int j = getTilesRowColFromBlockIndex(idx)[1];
 
         int horizontalDistance = Math.abs(block % width - j);
         int verticalDistance = Math.abs(block / width - i);
@@ -94,22 +99,56 @@ public class Board {
         return false;
     }
 
+    private int getBlanckBlockIndex() {
+        for (int i = 0; i < blocksSize; i ++) {
+            if (blocks[i] == 0) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     // all neighboring boards
     public Iterable<Board> neighbors() {
-        return null;
+        int blanckBlockIndex = getBlanckBlockIndex();
+        Queue<Board> neighborsQueue = new Queue<Board>();
+
+
+        if (blanckBlockIndex / width != 0) {
+            Board newBoard = new Board(this.tiles);
+            neighborsQueue.enqueue(swap(newBoard, blanckBlockIndex, blanckBlockIndex - width));
+        }
+
+        if (blanckBlockIndex / width != width - 1) {
+            Board newBoard = new Board(this.tiles);
+            neighborsQueue.enqueue(swap(newBoard, blanckBlockIndex, blanckBlockIndex + width));
+        }
+
+        if (blanckBlockIndex % width != 0) {
+            Board newBoard = new Board(this.tiles);
+            neighborsQueue.enqueue(swap(newBoard, blanckBlockIndex, blanckBlockIndex - 1));
+        }
+
+        if (blanckBlockIndex % width != width - 1) {
+            Board newBoard = new Board(this.tiles);
+            neighborsQueue.enqueue(swap(newBoard, blanckBlockIndex, blanckBlockIndex + 1));
+        }
+
+        return neighborsQueue;
+    }
+
+    private Board swap(Board currentBoard, int blanckBlockIndex, int i) {
+        int temp = currentBoard.blocks[blanckBlockIndex];
+        currentBoard.blocks[blanckBlockIndex] = currentBoard.blocks[i];
+        currentBoard.blocks[i] = temp;
+
+        return currentBoard;
     }
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
         return null;
-    }
-
-    private String getBlocks() {
-        StringBuilder toReturn = new StringBuilder("");
-        for (int i = 0; i < blocksSize; i ++) {
-            toReturn.append(blocks[i] + " ");
-        }
-        return toReturn.toString();
     }
 
     // unit testing (not graded)
@@ -120,11 +159,16 @@ public class Board {
         System.out.println("Hamming: " + board2.hamming());
         System.out.println("Manhattan: " + board2.manhattan());
 
+        for (Board currBoard : board2.neighbors()) {
+            System.out.println(currBoard);
+        }
+
         int[][] tiles1 = {{0, 1, 3, 12},{4, 5, 2, 13},{7 ,8 ,6, 14},{9 ,10 ,11, 15}};
         Board board1 = new Board(tiles1);
         System.out.println("Print: \n" + board1.toString());
         System.out.println("Hamming: " + board1.hamming());
         System.out.println("Manhattan: " + board1.manhattan());
+        System.out.println("Neighbors: " + board1.neighbors());
     }
 
 }
