@@ -1,5 +1,3 @@
-package week4.slider_puzzle.src;
-
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.Stack;
 

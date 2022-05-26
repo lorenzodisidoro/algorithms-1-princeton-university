@@ -1,5 +1,3 @@
-package week4.slider_puzzle.src;
-
 import edu.princeton.cs.algs4.Queue;
 import java.util.Arrays;
 
@@ -8,7 +6,9 @@ public class Board {
     private final int[][] tiles;
     private final int blocksSize;
     private final int width;
-    
+
+    // create a board from an n-by-n array of tiles,
+    // where tiles[row][col] = tile at (row, col)
     public Board(int[][] inputTiles) {
         tiles = inputTiles;
 
