@@ -2,8 +2,10 @@ package week4.slider_puzzle.src;
 
 import edu.princeton.cs.algs4.Queue;
 
+import java.util.Arrays;
+
 public class Board {
-    private final int[] blocks;
+    private int[] blocks;
     private final int[][] tiles;
     private final int blocksSize;
     private final int width;
@@ -91,12 +93,27 @@ public class Board {
 
     // is this board the goal board?
     public boolean isGoal() {
-        return true;
+        return hamming() == 0;
     }
 
     // does this board equal y?
     public boolean equals(Object y) {
-        return false;
+        if (y == this)
+            return true;
+        if (y == null)
+            return false;
+
+        Board currentBoard = (Board) y;
+
+        if (currentBoard.dimension() != dimension())
+            return false;
+
+        for (int i = 0; i < blocksSize; i++) {
+            if (blocks[i] != currentBoard.blocks[i])
+                return false;
+        }
+
+        return true;
     }
 
     private int getBlanckBlockIndex() {
@@ -148,23 +165,43 @@ public class Board {
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
-        return null;
+        int[] twinBlocks;
+
+        if (blocks[0] != 0 && blocks[1] != 0)
+            twinBlocks = swapBlocks(0, 1);
+        else twinBlocks = swapBlocks(blocksSize - 2, blocksSize - 1);
+
+        Board currentBoard = new Board(this.tiles);
+        currentBoard.blocks = twinBlocks;
+
+        return currentBoard;
+    }
+
+    private int[] swapBlocks(int i, int j) {
+        int[] blocks = Arrays.copyOf(this.blocks, this.blocks.length);
+        int swap = blocks[i];
+        blocks[i] = blocks[j];
+        blocks[j] = swap;
+        return blocks;
     }
 
     // unit testing (not graded)
     public static void main(String[] args) {
         int[][] tiles2 = {{8, 1, 3},{4, 0, 2},{7 ,6 ,5}};
         Board board2 = new Board(tiles2);
+        System.out.println("\n*****************************");
         System.out.println("Print: \n" + board2.toString());
         System.out.println("Hamming: " + board2.hamming());
         System.out.println("Manhattan: " + board2.manhattan());
 
+        System.out.println("Neighbors:");
         for (Board currBoard : board2.neighbors()) {
             System.out.println(currBoard);
         }
 
         int[][] tiles1 = {{0, 1, 3, 12},{4, 5, 2, 13},{7 ,8 ,6, 14},{9 ,10 ,11, 15}};
         Board board1 = new Board(tiles1);
+        System.out.println("\n*****************************");
         System.out.println("Print: \n" + board1.toString());
         System.out.println("Hamming: " + board1.hamming());
         System.out.println("Manhattan: " + board1.manhattan());
